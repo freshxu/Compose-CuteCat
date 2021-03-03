@@ -15,39 +15,51 @@
  */
 package com.example.androiddevchallenge
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.lifecycleScope
+import com.example.androiddevchallenge.model.Cat
 import com.example.androiddevchallenge.model.CatRepo
 import com.example.androiddevchallenge.ui.theme.MyTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class CatDetailActivity : AppCompatActivity() {
+
+    companion object {
+        private const val INTENT_EXTRA_CAT = "CAT"
+
+        fun startActivity(activity: AppCompatActivity, cat: Cat) {
+            activity.startActivity(
+                Intent(activity, CatDetailActivity::class.java).apply {
+                    putExtra(INTENT_EXTRA_CAT, cat)
+                }
+            )
+        }
+    }
+
+    private val cat: Cat?
+        get() = intent.getParcelableExtra(INTENT_EXTRA_CAT)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MyTheme {
-                Surface(color = MaterialTheme.colors.background) {
-                    Column {
-                        CatList(
-                            cats = CatRepo.get(),
-                            modifier = Modifier.fillMaxHeight(1f),
-                            onClick = { pet ->
-                                lifecycleScope.launch {
-                                    CatDetailActivity.startActivity(this@MainActivity, pet)
-                                }
+                cat?.let { cat ->
+                    Surface(color = MaterialTheme.colors.background) {
+                        Column {
+                            Box {
+                                DetailView(cat = cat)
                             }
-                        )
+                        }
                     }
                 }
             }
@@ -55,13 +67,16 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-@Preview("Light Theme")
+@Preview("Light Theme", widthDp = 360)
 @Composable
 private fun Preview() {
+    val cat = CatRepo.get()[0]
     MyTheme {
         Surface(color = MaterialTheme.colors.background) {
             Column {
-                CatList(cats = CatRepo.get(), Modifier.fillMaxHeight(), onClick = {})
+                Box {
+                    DetailView(cat = cat)
+                }
             }
         }
     }
