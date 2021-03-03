@@ -17,7 +17,7 @@ package com.example.androiddevchallenge.model
 
 import android.os.Parcelable
 import androidx.annotation.DrawableRes
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Cat(
